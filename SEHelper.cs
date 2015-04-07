@@ -55,6 +55,15 @@ namespace XqStorageEngine
 
         #endregion
 
+        public void RegisterItem(string testType, long maxID, string tableName, string createSQl, Action<string, long> updateID) { 
+        
+        
+        
+        
+        }
+
+
+
         #region 载入配置
         /// <summary>
         /// 载入配置
