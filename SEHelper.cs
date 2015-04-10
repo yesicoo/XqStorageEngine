@@ -27,7 +27,7 @@ using Dapper;
 
 namespace XqStorageEngine
 {
-    public class SEHelper
+    public class SEHelper 
     {
         public string DataSqlComm = string.Empty;
         public string ConfigComm = string.Empty;
@@ -38,58 +38,43 @@ namespace XqStorageEngine
         /// 构造函数
         /// </summary>
         /// <param name="sqlComm">连接字符串</param>
-        public SEHelper(string dataSqlComm, string configComm = "")
+        public SEHelper(string dataSqlComm)
         {
             DataSqlComm = dataSqlComm;
-            if (configComm == "")
-            {
-                ConfigComm = dataSqlComm;
-            }
-            else
-            {
-                ConfigComm = configComm;
-            }
-            LoadConfig();
-            SELog.SendLog("存储引擎初始化完毕!");
+           
         }
 
         #endregion
 
-        public void RegisterItem(string testType, long maxID, string tableName, string createSQl, Action<string, long> updateID) { 
-        
-        
-        
-        
-        }
-
-
-
-        #region 载入配置
+        #region 注册存储实体类
         /// <summary>
-        /// 载入配置
+        /// 注册存储实体类
         /// </summary>
-        private void LoadConfig()
+        /// <param name="DataType">测试类型</param>
+        /// <param name="maxID">主键ID</param>
+        /// <param name="tableName">表名</param>
+        /// <param name="createSQl">分表存储SQL，填空表示不分表存储</param>
+        /// <param name="updateID">数据更新ID</param>
+        public void RegisterItem(string dataType, long maxID, string tableName, string createSQl, Action<string, string, long> updateAction)
         {
-            List<dynamic> splitConfigs = ExecuteDynamicEntities("select * from storageengine_config", ConfigComm);
-            SEntitys.Clear();
-            splitConfigs.ForEach((sc) =>
+            SEntity se = new SEntity();
+            se._MaxID = maxID;
+            se.CreateSQL = createSQl;
+            se.TableName = tableName;
+            se.DataType = dataType;
+            se.IsSplit = !string.IsNullOrEmpty(createSQl);
+            se.updateAction = updateAction;
+            if (SEntitys.ContainsKey(dataType))
             {
-                SEntity se = new SEntity();
-                se._MaxID = sc.MaxID;
-                se.CreateSQL = sc.CreateSQL;
-                se.TableName = sc.TableName;
-                se.TestType = sc.TestType;
-                se.IsSplit = !string.IsNullOrEmpty(se._CreateSQL);
-                SEntitys.Add(se.TestType, se);
-            });
-        }
-        /// <summary>
-        /// 重新载入
-        /// </summary>
-        public void ReLoadConfig()
-        {
-            LoadConfig();
-        }
+                SEntitys[se.DataType]=se;
+                SELog.SendLog("updated " + dataType + " Storage Entity!");
+            }
+            else {
+                SEntitys.Add(se.DataType, se);
+                SELog.SendLog("Created " + dataType + " Storage Entity!");
+            }
+          
+        } 
         #endregion
 
         #region 数据库操作
@@ -1244,17 +1229,6 @@ namespace XqStorageEngine
         }
         #endregion
 
-        #region 更新最大ID
-        /// <summary>
-        /// 更新最大ID
-        /// </summary>
-        /// <param name="se"></param>
-        public void UpdateIndexID(SEntity se)
-        {
-            ExecuteNonQuery(string.Format("UPDATE storageengine_config SET `MaxID`='{0}',`LastTableName`='{1}' WHERE (`TestType`='{2}')", se._MaxID, se.LastTableName, se.TestType), ConfigComm);
-        }
-        #endregion
-
         #region 依据时间 获取表名
         /// <summary>
         /// 依据时间 获取表名
@@ -1317,7 +1291,7 @@ namespace XqStorageEngine
             DateTime dte = Convert.ToDateTime(dt.Rows[0]["TestTime"]);
             se.LastTableName = GetTableName(se, dte);
             string InsertSql = string.Format("insert into `{0}` {1} values {2}", se.LastTableName, sb_Columns.ToString(), sb_Values.ToString());
-            UpdateIndexID(se);
+            se.updateAction(se.DataType, se.LastTableName, se.MaxID);
             return InsertSql;
         }
 
@@ -1333,8 +1307,11 @@ namespace XqStorageEngine
             for (int i = 0; i < dt.Columns.Count; i++)
             {
                 string ColumnName = dt.Columns[i].ColumnName;
-                sb_Columns.Append("`").Append(ColumnName).Append("`,");
-                ColumnNames.Add(ColumnName);
+                if (ColumnName.ToLower() != "id")
+                {
+                    sb_Columns.Append("`").Append(ColumnName).Append("`,");
+                    ColumnNames.Add(ColumnName);
+                }
             }
             #endregion
 
@@ -1357,9 +1334,12 @@ namespace XqStorageEngine
                 sb_Values.Append(stemp.ToString().TrimEnd(',')).Append(")");
             }
             #endregion
-            DateTime dte = Convert.ToDateTime(dt.Rows[0]["TestTime"]);
             string InsertSql = string.Format("insert into `{0}` ({1}) values {2}", TableName, sb_Columns.ToString().TrimEnd(','), sb_Values.ToString());
             return InsertSql;
+        }
+
+        public string Entity2InsterSQL<T>(string tableName,T t) {
+            return "";
         }
         #endregion
 

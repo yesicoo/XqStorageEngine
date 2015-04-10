@@ -43,11 +43,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DBType.cs" />
+    <Compile Include="Helper\MS_SEHelper.cs" />
+    <Compile Include="ISEHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SEHelper.cs" />
     <Compile Include="SELog.cs" />
+    <Compile Include="SEManager.cs" />
     <Compile Include="SEntity.cs" />
     <Compile Include="SqlMapper.cs" />
+    <Compile Include="Helper\MySQL_SEHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

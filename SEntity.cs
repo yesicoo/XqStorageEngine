@@ -27,7 +27,7 @@ namespace XqStorageEngine
         /// <summary>
         /// 测试类型
         /// </summary>
-        public string TestType { set; get; }
+        public string DataType { set; get; }
         /// <summary>
         /// 表名
         /// </summary>
@@ -70,5 +70,7 @@ namespace XqStorageEngine
         }
 
         public bool IsSplit { get; set; }
+        
+        public Action<string, string, long> updateAction { get; set; }
     }
 }
