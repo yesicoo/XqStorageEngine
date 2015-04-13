@@ -27,17 +27,18 @@ namespace XqStorageEngine
 {
     public class SEManager
     {
-        public string Pref = "Log";
-        public string DataSqlComm = string.Empty;
         ISEHelper SEHelper = null;
         public Dictionary<string, SEntity> SEntitys = new Dictionary<string, SEntity>();
         
         #region 构造函数
-        public SEManager(DBType dbt,string dataSqlComm)
+        public SEManager(DBType dbt, string dataSqlComm,string timeColumnName="TestTime",string Pref="Log")
         {
             var seHelperName = ((DescriptionAttribute)dbt.GetType().GetField(dbt.ToString()).GetCustomAttributes(typeof(DescriptionAttribute), false).First()).Description;
             SEHelper = Assembly.GetExecutingAssembly().CreateInstance("XqStorageEngine." + seHelperName) as ISEHelper;
-            DataSqlComm = dataSqlComm;
+            SEHelper.DBConnentString = dataSqlComm;
+            SEHelper.SEntitys = SEntitys;
+            SEHelper.Pref = Pref;
+            SEHelper.TimeColumnName=timeColumnName;
         } 
         #endregion
 
@@ -119,13 +120,24 @@ namespace XqStorageEngine
         /// </summary>
         /// <param name="CreateTime"></param>
         /// <returns></returns>
-        private string GetTableName(SEntity se, DateTime CreateTime)
+        public string GetTableName(SEntity se, DateTime dataTime)
         {
-            if (se.IsSplit)
-                return string.Format("{0}_{1}_{2}", Pref, se.TableName, CreateTime.ToString("yyyy-MM-dd"));
-            else
-                return se.TableName;
+            return SEHelper.GetTableName(se, dataTime);
         }
+
+        public string GetTableName(string TestType, DateTime dataTime)
+        {
+            SEntity se = null;
+            if (SEntitys.TryGetValue(TestType, out se))
+            {
+                return SEHelper.GetTableName(se, dataTime);
+            }
+            else {
+                return null;
+            }
+           
+        }
+
         #endregion
 
         #region 数据转SQL

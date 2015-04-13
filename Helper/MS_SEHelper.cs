@@ -24,19 +24,100 @@ namespace XqStorageEngine
 {
     class MS_SEHelper:ISEHelper
     {
+
+        public string DBConnentString
+        {
+            set { throw new NotImplementedException(); }
+        }
+
+        public string TimeColumnName
+        {
+            set { throw new NotImplementedException(); }
+        }
+
+        public Dictionary<string, SEntity> SEntitys
+        {
+            set { throw new NotImplementedException(); }
+        }
+
+        public string Pref
+        {
+            set { throw new NotImplementedException(); }
+        }
+
+        public string GetTableName(SEntity se, DateTime DataTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public System.Data.Common.DbDataReader ExecuteReader(string sql)
+        {
+            throw new NotImplementedException();
+        }
+
+        public System.Data.Common.DbDataReader ExecuteReader(string sql, params System.Data.Common.DbParameter[] dbParameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public System.Threading.Tasks.Task<System.Data.Common.DbDataReader> ExecuteReaderAsync(string sql)
+        {
+            throw new NotImplementedException();
+        }
+
+        public System.Threading.Tasks.Task<System.Data.Common.DbDataReader> ExecuteReaderAsync(string sql, params System.Data.Common.DbParameter[] dbParameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object ExecuteScalar(string sql)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object ExecuteScalar(string sql, params System.Data.Common.DbParameter[] dbParameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public System.Threading.Tasks.Task<object> ExecuteScalarAsync(string sql)
+        {
+            throw new NotImplementedException();
+        }
+
+        public System.Threading.Tasks.Task<object> ExecuteScalarAsync(string sql, params System.Data.Common.DbParameter[] dbParameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int ExecuteCount(string TestType, DateTime TestTime, string Query = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        public int ExecuteCount(string TableName, string Query = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        public int ExecuteCount(string TableName, string Query, DateTime StartTime, DateTime EndTime)
+        {
+            throw new NotImplementedException();
+        }
+
         public string DataTable2InsterSQL(System.Data.DataTable dt)
         {
-            return "";
+            throw new NotImplementedException();
         }
 
         public string Entity2InsterSQL<T>(string tableName, List<T> ts)
         {
-            return "";
+            throw new NotImplementedException();
         }
 
         public string Entity2InsterSQL<T>(string tableName, T t)
         {
-            return "";
+            throw new NotImplementedException();
         }
     }
 }

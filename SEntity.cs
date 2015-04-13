@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace XqStorageEngine
 {
@@ -48,6 +49,7 @@ namespace XqStorageEngine
             {
                 lock (this)
                 {
+                   new Thread(()=>{ updateAction(DataType, LastTableName, _MaxID)}).Start();
                     return string.Format(_CreateSQL, LastTableName);
                 }
             }
@@ -64,13 +66,14 @@ namespace XqStorageEngine
                 lock (this)
                 {
                     return _MaxID++;
+
                 }
             }
             set { _MaxID = value; }
         }
 
         public bool IsSplit { get; set; }
-        
+
         public Action<string, string, long> updateAction { get; set; }
     }
 }
